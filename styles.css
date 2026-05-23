@@ -70,13 +70,29 @@
   margin-bottom: 12px;
 }
 
-.tdee-chain-link {
-  display: inline-block;
-  font-size: 0.95em;
-  line-height: 1;
-  user-select: none;
+.tdee-chain-logged {
+  display: flex;
+  align-items: stretch;
+  flex-wrap: nowrap;
+  position: relative;
+}
+
+.tdee-chain-connector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  margin: 0 -6px;
   flex-shrink: 0;
-  transform: rotate(90deg); /* ⛓️ renders vertical on Apple; lay flat between items */
+  z-index: 0;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.tdee-chain-connector-svg {
+  width: 28px;
+  height: 14px;
+  display: block;
 }
 
 .tdee-chain-btn {
@@ -115,8 +131,10 @@
 }
 
 .tdee-chain-done {
+  position: relative;
+  z-index: 1;
   background: rgb(34, 197, 94);
-  color: white;
+  color: #fff;
   border-color: rgb(34, 197, 94);
 }
 
@@ -124,8 +142,15 @@
   filter: brightness(0.92);
 }
 
+.tdee-chain-done .tdee-chain-label,
 .tdee-chain-done .tdee-chain-kcal {
-  color: rgba(255, 255, 255, 0.85);
+  color: #fff;
+  -webkit-text-stroke: 0.35px rgba(0, 0, 0, 0.9);
+  paint-order: stroke fill;
+}
+
+.tdee-chain-done .tdee-chain-kcal {
+  -webkit-text-stroke-width: 0.3px;
 }
 
 .theme-dark .tdee-chain-done {

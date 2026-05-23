@@ -1,5 +1,6 @@
 const { totalCalories, entryCalories, formatCalories, progressRatio } = require("../domain/totals");
 const { activeEntries, isStapleLogged } = require("../domain/entries");
+const { appendChainConnector } = require("./chain-connector");
 
 class TrackerView {
   constructor(plugin) {
@@ -45,7 +46,7 @@ class TrackerView {
       const remaining = tdee - total;
       summary.createDiv({
         cls: `tdee-remaining${remaining < 0 ? " tdee-remaining-over" : ""}`,
-        text: remaining >= 0 ? `${formatCalories(remaining)} kcal to TDEE` : `${formatCalories(Math.abs(remaining))} kcal over TDEE`
+        text: remaining >= 0 ? `${formatCalories(remaining)} kcal remaining` : `${formatCalories(Math.abs(remaining))} kcal over TDEE`
       });
     } else {
       summary.createDiv({ cls: "tdee-remaining", text: "Set tdee in your vault file" });
@@ -58,10 +59,13 @@ class TrackerView {
 
   renderChain(container, el, file, logged, showStaples) {
     const chain = container.createDiv({ cls: "tdee-chain" });
-    logged.forEach((entry, i) => {
-      if (i > 0) chain.createSpan({ cls: "tdee-chain-link", text: "⛓️" });
-      this.renderLoggedChip(chain, entry);
-    });
+    if (logged.length > 0) {
+      const loggedRow = chain.createDiv({ cls: "tdee-chain-logged" });
+      logged.forEach((entry, i) => {
+        if (i > 0) appendChainConnector(loggedRow);
+        this.renderLoggedChip(loggedRow, entry);
+      });
+    }
 
     if (showStaples) {
       const pendingStaples = file.staples.filter(s => !isStapleLogged(file.entries, s.id));

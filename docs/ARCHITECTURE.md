@@ -33,7 +33,7 @@ Code block:
 ```
 ````
 
-Shows total / TDEE / remaining. Logged foods appear as green rounded chain segments (⛓️ between done items); staples log once; click green to remove. Add menu closes after adding.
+Shows total / TDEE / remaining. Logged foods appear as green rounded chips linked by an SVG chain; staples log once; click green to remove.
 
 ## Layout
 
