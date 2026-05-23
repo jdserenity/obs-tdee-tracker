@@ -1,4 +1,4 @@
-const { Plugin } = require("obsidian");
+const { Plugin, Notice } = require("obsidian");
 const { DEFAULT_SETTINGS } = require("./domain/defaults");
 const { getCurrentDay } = require("./domain/dates");
 const { makeEntry, isStapleLogged } = require("./domain/entries");
@@ -26,6 +26,16 @@ class TdeeTrackerPlugin extends Plugin {
     });
 
     this.addSettingTab(new TdeeTrackerSettingTab(this.app, this));
+
+    this.addCommand({
+      id: "refresh-ui",
+      name: "Refresh UI",
+      callback: async () => {
+        await this.vault.loadFile();
+        await this.refreshAll();
+        new Notice("TDEE tracker refreshed.");
+      }
+    });
 
     this.registerInterval(window.setInterval(() => this.checkDayChange(), 60000));
 

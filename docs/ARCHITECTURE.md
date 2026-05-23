@@ -41,11 +41,11 @@ Shows total / TDEE / remaining. Logged foods appear as green rounded chips linke
 |-------|----------|
 | Entry | `src/main.js` |
 | Plugin | `src/plugin.js` |
-| UI | `src/ui/tracker-view.js` |
+| UI | `src/ui/tracker-view.js`, `chain-connector.js` |
 | Settings | `src/settings.js` |
 | Store | `src/store/tdee-store.js` |
 | Domain | `src/domain/` |
-| Infra | `src/infra/vault-repository.js`, `sync-coordinator.js` |
+| Infra | `src/infra/vault-repository.js`, `sync-coordinator.js`, `hash.js` |
 
 Tests: `npm test`.
 
