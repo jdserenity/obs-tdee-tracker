@@ -102,6 +102,8 @@
   justify-content: center;
   gap: 2px;
   min-height: 52px;
+  min-width: 44px;
+  max-width: 160px;
   padding: 8px 14px;
   border: 1px solid var(--background-modifier-border);
   border-radius: 8px;
@@ -110,7 +112,16 @@
   cursor: pointer;
   font-size: 0.85em;
   font-weight: 600;
+  white-space: normal;
+  text-align: center;
   transition: background 0.15s ease;
+}
+
+.tdee-chain-label {
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.2;
+  max-width: 100%;
 }
 
 .tdee-chain-plus {
@@ -183,12 +194,25 @@
   color: var(--text-normal);
 }
 
-.tdee-add-back {
+.tdee-add-close {
   border: none;
   background: transparent;
-  color: var(--text-accent);
+  color: var(--text-muted);
   cursor: pointer;
-  font-size: 0.9em;
+  font-size: 1.35em;
+  line-height: 1;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.tdee-add-close:hover {
+  background: var(--background-modifier-hover);
+  color: var(--text-normal);
 }
 
 .tdee-regular-list {
@@ -208,30 +232,41 @@
 
 .tdee-regular-name {
   flex: 1;
-  min-width: 100px;
+  min-width: 80px;
   font-weight: 500;
 }
 
-.tdee-regular-kcal,
 .tdee-custom-label {
   color: var(--text-muted);
   font-size: 0.9em;
+  min-width: 64px;
 }
 
-.tdee-count-wrap {
+.tdee-portion-wrap {
   display: flex;
   align-items: center;
   gap: 6px;
+  flex-wrap: wrap;
 }
 
-.tdee-count-input,
-.tdee-custom-input {
+.tdee-portion-x {
+  color: var(--text-muted);
+  font-size: 0.95em;
+  line-height: 1;
+  user-select: none;
+}
+
+.tdee-portion-input {
   width: 72px;
   padding: 4px 8px;
   border: 1px solid var(--background-modifier-border);
   border-radius: 8px;
   background: var(--background-primary);
   color: var(--text-normal);
+}
+
+.tdee-portion-qty {
+  width: 52px;
 }
 
 .tdee-add-btn {
@@ -253,8 +288,11 @@
   padding: 10px 12px;
 }
 
-.is-mobile .tdee-count-input,
-.is-mobile .tdee-custom-input {
+.is-mobile .tdee-portion-input {
   width: 64px;
   font-size: 16px;
+}
+
+.is-mobile .tdee-portion-qty {
+  width: 48px;
 }

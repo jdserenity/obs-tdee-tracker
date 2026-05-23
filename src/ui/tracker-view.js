@@ -118,8 +118,8 @@ class TrackerView {
     const panel = container.createDiv({ cls: "tdee-add-panel" });
     const header = panel.createDiv({ cls: "tdee-add-header" });
     header.createEl("span", { text: "Regulars & custom", cls: "tdee-add-title" });
-    const back = header.createEl("button", { cls: "tdee-add-back", text: "← Staples" });
-    back.addEventListener("click", async () => {
+    const close = header.createEl("button", { cls: "tdee-add-close", text: "×", attr: { title: "Close", "aria-label": "Close" } });
+    close.addEventListener("click", async () => {
       this.plugin.setAddMode(el, false);
       await this.render(el);
     });
@@ -131,31 +131,42 @@ class TrackerView {
       for (const regular of file.regulars) {
         const row = list.createDiv({ cls: "tdee-regular-row" });
         row.createSpan({ cls: "tdee-regular-name", text: regular.name });
-        row.createSpan({ cls: "tdee-regular-kcal", text: `${regular.calories} kcal` });
-        const countWrap = row.createDiv({ cls: "tdee-count-wrap" });
-        const input = countWrap.createEl("input", {
-          cls: "tdee-count-input",
-          attr: { type: "number", min: "1", step: "1", value: "1" }
-        });
-        const addBtn = countWrap.createEl("button", { cls: "tdee-add-btn", text: "Add" });
-        addBtn.addEventListener("click", async () => {
-          const count = Math.max(1, Math.round(Number(input.value) || 1));
-          await this.plugin.addRegular(regular, count, el);
+        this.renderPortionControls(row, {
+          defaultCalories: regular.calories,
+          onAdd: async (calories, count) => {
+            await this.plugin.addRegular(regular, calories, count, el);
+          }
         });
       }
     }
 
     const custom = panel.createDiv({ cls: "tdee-custom-row" });
     custom.createSpan({ text: "Irregular:", cls: "tdee-custom-label" });
-    const customInput = custom.createEl("input", {
-      cls: "tdee-custom-input",
-      attr: { type: "number", min: "1", step: "1", placeholder: "kcal" }
+    this.renderPortionControls(custom, {
+      placeholderCalories: "cals",
+      onAdd: async (calories, count) => {
+        await this.plugin.addCustom(calories, count, el);
+      }
     });
-    const customBtn = custom.createEl("button", { cls: "tdee-add-btn", text: "Add" });
-    customBtn.addEventListener("click", async () => {
-      const calories = Math.round(Number(customInput.value));
+  }
+
+  renderPortionControls(row, { defaultCalories, placeholderCalories, onAdd }) {
+    const wrap = row.createDiv({ cls: "tdee-portion-wrap" });
+    const calAttrs = { type: "number", min: "1", step: "1" };
+    if (defaultCalories != null) calAttrs.value = String(defaultCalories);
+    else if (placeholderCalories) calAttrs.placeholder = placeholderCalories;
+    const calInput = wrap.createEl("input", { cls: "tdee-portion-input", attr: calAttrs });
+    wrap.createSpan({ cls: "tdee-portion-x", text: "×" });
+    const qtyInput = wrap.createEl("input", {
+      cls: "tdee-portion-input tdee-portion-qty",
+      attr: { type: "number", min: "1", step: "1", value: "1" }
+    });
+    const addBtn = wrap.createEl("button", { cls: "tdee-add-btn", text: "Add" });
+    addBtn.addEventListener("click", async () => {
+      const calories = Math.round(Number(calInput.value));
+      const count = Math.max(1, Math.round(Number(qtyInput.value) || 1));
       if (!calories || calories <= 0) return;
-      await this.plugin.addCustom(calories, el);
+      await onAdd(calories, count);
     });
   }
 
