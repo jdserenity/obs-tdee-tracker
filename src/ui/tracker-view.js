@@ -1,4 +1,4 @@
-const { totalCalories, formatCalories, progressRatio } = require("../domain/totals");
+const { totalCalories, entryCalories, formatCalories, progressRatio } = require("../domain/totals");
 
 class TrackerView {
   constructor(plugin) {
@@ -27,11 +27,8 @@ class TrackerView {
     const ratio = progressRatio(total, tdee);
 
     this.renderSummary(container, total, tdee, ratio);
-
+    this.renderChain(container, el, file, !addMode);
     if (addMode) this.renderAddMode(container, el, file);
-    else this.renderStaplesMode(container, el, file);
-
-    if (file.entries.length > 0) this.renderEntryLog(container, file.entries);
 
     el.replaceChildren(container);
   }
@@ -57,35 +54,48 @@ class TrackerView {
     }
   }
 
-  renderStaplesMode(container, el, file) {
+  renderChain(container, el, file, showStaples) {
     const chain = container.createDiv({ cls: "tdee-chain" });
-    if (file.staples.length === 0) {
-      chain.createEl("p", {
-        cls: "tdee-tracker-empty",
-        text: "No staples in vault file. Add staples to Archive/tdee-tracker.md."
-      });
-    } else {
-      for (const staple of file.staples) {
-        const btn = chain.createEl("button", {
-          cls: "tdee-chain-btn",
-          text: staple.name,
-          attr: { title: `+${staple.calories} kcal` }
+    for (const entry of file.entries) this.renderLoggedChip(chain, entry);
+
+    if (showStaples) {
+      if (file.staples.length === 0 && file.entries.length === 0) {
+        chain.createEl("p", {
+          cls: "tdee-tracker-empty tdee-chain-empty",
+          text: "No staples in vault file. Add staples to Archive/tdee-tracker.md."
         });
-        btn.createSpan({ cls: "tdee-chain-kcal", text: `${staple.calories}` });
-        btn.addEventListener("click", async () => {
-          await this.plugin.addStaple(staple);
-        });
+      } else {
+        for (const staple of file.staples) {
+          const btn = chain.createEl("button", {
+            cls: "tdee-chain-btn",
+            attr: { title: `+${staple.calories} kcal` }
+          });
+          btn.createSpan({ cls: "tdee-chain-label", text: staple.name });
+          btn.createSpan({ cls: "tdee-chain-kcal", text: `${staple.calories}` });
+          btn.addEventListener("click", async () => {
+            await this.plugin.addStaple(staple);
+          });
+        }
       }
+      const plus = chain.createEl("button", {
+        cls: "tdee-chain-btn tdee-chain-plus",
+        text: "+",
+        attr: { title: "Add regular or custom calories" }
+      });
+      plus.addEventListener("click", async () => {
+        this.plugin.setAddMode(el, true);
+        await this.render(el);
+      });
     }
-    const plus = chain.createEl("button", {
-      cls: "tdee-chain-btn tdee-chain-plus",
-      text: "+",
-      attr: { title: "Add regular or custom calories" }
-    });
-    plus.addEventListener("click", async () => {
-      this.plugin.setAddMode(el, true);
-      await this.render(el);
-    });
+  }
+
+  renderLoggedChip(chain, entry) {
+    const amount = entryCalories(entry);
+    const label = entry.kind === "custom" ? formatCalories(amount) : entry.label;
+    const displayLabel = entry.count > 1 ? `${label} ×${entry.count}` : label;
+    const chip = chain.createDiv({ cls: "tdee-chain-btn tdee-chain-done", attr: { title: `${formatCalories(amount)} kcal logged` } });
+    chip.createSpan({ cls: "tdee-chain-label", text: displayLabel });
+    chip.createSpan({ cls: "tdee-chain-kcal", text: `${formatCalories(amount)}` });
   }
 
   renderAddMode(container, el, file) {
@@ -133,20 +143,6 @@ class TrackerView {
       await this.plugin.addCustom(calories);
       this.plugin.setAddMode(el, false);
     });
-  }
-
-  renderEntryLog(container, entries) {
-    const log = container.createDiv({ cls: "tdee-log" });
-    log.createEl("div", { text: "Today", cls: "tdee-log-label" });
-    const list = log.createDiv({ cls: "tdee-log-list" });
-    for (const entry of [...entries].reverse()) {
-      const count = entry.count > 1 ? ` ×${entry.count}` : "";
-      const amount = entry.calories * (entry.count || 1);
-      list.createDiv({
-        cls: "tdee-log-item",
-        text: `${entry.label}${count} — ${formatCalories(amount)} kcal`
-      });
-    }
   }
 
   async refreshAll() {

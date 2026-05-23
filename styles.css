@@ -70,6 +70,15 @@
   margin-bottom: 12px;
 }
 
+.tdee-chain > *:first-child {
+  border-radius: 8px 0 0 8px;
+}
+
+.tdee-chain > *:last-child {
+  border-radius: 0 8px 8px 0;
+  border-right: 1px solid var(--background-modifier-border);
+}
+
 .tdee-chain-btn {
   display: inline-flex;
   flex-direction: column;
@@ -88,20 +97,15 @@
   transition: background 0.15s ease;
 }
 
-.tdee-chain-btn:first-child {
-  border-radius: 8px 0 0 8px;
-}
-
 .tdee-chain-plus {
-  border-right: 1px solid var(--background-modifier-border);
-  border-radius: 0 8px 8px 0;
+  border-right: none;
   min-width: 44px;
   font-size: 1.4em;
   font-weight: 400;
   color: var(--text-muted);
 }
 
-.tdee-chain-btn:hover {
+.tdee-chain-btn:hover:not(.tdee-chain-done) {
   background: var(--background-modifier-hover);
 }
 
@@ -109,6 +113,26 @@
   font-size: 0.75em;
   font-weight: 500;
   color: var(--text-muted);
+}
+
+.tdee-chain-done {
+  background: rgb(34, 197, 94);
+  color: white;
+  cursor: default;
+}
+
+.tdee-chain-done .tdee-chain-kcal {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.theme-dark .tdee-chain-done {
+  background: rgb(34, 197, 94);
+}
+
+.tdee-chain-empty {
+  flex: 1;
+  border: none;
+  padding: 0;
 }
 
 .tdee-add-panel {
@@ -194,32 +218,6 @@
 
 .tdee-add-btn:hover {
   filter: brightness(1.05);
-}
-
-.tdee-log {
-  margin-top: 8px;
-  padding-top: 12px;
-  border-top: 1px solid var(--background-modifier-border);
-}
-
-.tdee-log-label {
-  font-size: 0.75em;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--text-muted);
-  margin-bottom: 6px;
-}
-
-.tdee-log-list {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.tdee-log-item {
-  font-size: 0.85em;
-  color: var(--text-muted);
 }
 
 .is-mobile .tdee-chain-btn {

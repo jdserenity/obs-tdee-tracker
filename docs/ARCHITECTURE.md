@@ -33,7 +33,7 @@ Code block:
 ```
 ````
 
-Shows total / TDEE / remaining, staple button chain with `+` at end. `+` switches to regulars list (count + Add) and irregular kcal input. Today's entries listed below.
+Shows total / TDEE / remaining. Logged foods appear as green chain segments; staple buttons and `+` extend the chain.
 
 ## Layout
 
