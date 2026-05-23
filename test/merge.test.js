@@ -31,6 +31,7 @@ test("mergeForSave merges same-day entries and disk config", () => {
   assert.equal(merged.tdee, 2500);
   assert.equal(merged.regulars.length, 1);
   assert.equal(merged.entries.length, 2);
+  assert.equal(merged.entries.filter(e => !e.deleted).length, 2);
 });
 
 test("mergeIncoming applies disk config and merges entries", () => {

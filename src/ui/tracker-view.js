@@ -1,4 +1,5 @@
 const { totalCalories, entryCalories, formatCalories, progressRatio } = require("../domain/totals");
+const { activeEntries, isStapleLogged } = require("../domain/entries");
 
 class TrackerView {
   constructor(plugin) {
@@ -20,6 +21,7 @@ class TrackerView {
     this.plugin.store.rollDayIfNeeded();
     const file = this.plugin.store.file;
     const addMode = this.plugin.isAddMode(el);
+    const logged = activeEntries(file.entries);
     const container = document.createElement("div");
     container.className = "tdee-tracker-container";
     const total = totalCalories(file.entries);
@@ -27,7 +29,7 @@ class TrackerView {
     const ratio = progressRatio(total, tdee);
 
     this.renderSummary(container, total, tdee, ratio);
-    this.renderChain(container, el, file, !addMode);
+    this.renderChain(container, el, file, logged, !addMode);
     if (addMode) this.renderAddMode(container, el, file);
 
     el.replaceChildren(container);
@@ -54,18 +56,22 @@ class TrackerView {
     }
   }
 
-  renderChain(container, el, file, showStaples) {
+  renderChain(container, el, file, logged, showStaples) {
     const chain = container.createDiv({ cls: "tdee-chain" });
-    for (const entry of file.entries) this.renderLoggedChip(chain, entry);
+    logged.forEach((entry, i) => {
+      if (i > 0) chain.createSpan({ cls: "tdee-chain-link", text: "⛓️" });
+      this.renderLoggedChip(chain, entry);
+    });
 
     if (showStaples) {
-      if (file.staples.length === 0 && file.entries.length === 0) {
+      const pendingStaples = file.staples.filter(s => !isStapleLogged(file.entries, s.id));
+      if (pendingStaples.length === 0 && logged.length === 0) {
         chain.createEl("p", {
           cls: "tdee-tracker-empty tdee-chain-empty",
           text: "No staples in vault file. Add staples to Archive/tdee-tracker.md."
         });
       } else {
-        for (const staple of file.staples) {
+        for (const staple of pendingStaples) {
           const btn = chain.createEl("button", {
             cls: "tdee-chain-btn",
             attr: { title: `+${staple.calories} kcal` }
@@ -93,9 +99,15 @@ class TrackerView {
     const amount = entryCalories(entry);
     const label = entry.kind === "custom" ? formatCalories(amount) : entry.label;
     const displayLabel = entry.count > 1 ? `${label} ×${entry.count}` : label;
-    const chip = chain.createDiv({ cls: "tdee-chain-btn tdee-chain-done", attr: { title: `${formatCalories(amount)} kcal logged` } });
+    const chip = chain.createEl("button", {
+      cls: "tdee-chain-btn tdee-chain-done",
+      attr: { title: `${formatCalories(amount)} kcal — click to remove` }
+    });
     chip.createSpan({ cls: "tdee-chain-label", text: displayLabel });
     chip.createSpan({ cls: "tdee-chain-kcal", text: `${formatCalories(amount)}` });
+    chip.addEventListener("click", async () => {
+      await this.plugin.removeEntry(entry.id);
+    });
   }
 
   renderAddMode(container, el, file) {
@@ -124,8 +136,7 @@ class TrackerView {
         const addBtn = countWrap.createEl("button", { cls: "tdee-add-btn", text: "Add" });
         addBtn.addEventListener("click", async () => {
           const count = Math.max(1, Math.round(Number(input.value) || 1));
-          await this.plugin.addRegular(regular, count);
-          this.plugin.setAddMode(el, false);
+          await this.plugin.addRegular(regular, count, el);
         });
       }
     }
@@ -140,8 +151,7 @@ class TrackerView {
     customBtn.addEventListener("click", async () => {
       const calories = Math.round(Number(customInput.value));
       if (!calories || calories <= 0) return;
-      await this.plugin.addCustom(calories);
-      this.plugin.setAddMode(el, false);
+      await this.plugin.addCustom(calories, el);
     });
   }
 

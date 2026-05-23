@@ -14,6 +14,23 @@ function makeEntry({ kind, refId, label, calories, count = 1 }) {
   };
 }
 
+function makeTombstone(id) {
+  return { id, deleted: true, updatedAt: new Date().toISOString() };
+}
+
+function isActiveEntry(entry) {
+  return entry && !entry.deleted && typeof entry.calories === "number";
+}
+
+function activeEntries(entries) {
+  if (!Array.isArray(entries)) return [];
+  return entries.filter(isActiveEntry);
+}
+
+function isStapleLogged(entries, stapleId) {
+  return activeEntries(entries).some(e => e.kind === "staple" && e.refId === stapleId);
+}
+
 function ensureCurrentDay(state, currentDay) {
   if (state.day !== currentDay) {
     state.day = currentDay;
@@ -21,4 +38,12 @@ function ensureCurrentDay(state, currentDay) {
   }
 }
 
-module.exports = { newEntryId, makeEntry, ensureCurrentDay };
+module.exports = {
+  newEntryId,
+  makeEntry,
+  makeTombstone,
+  isActiveEntry,
+  activeEntries,
+  isStapleLogged,
+  ensureCurrentDay
+};

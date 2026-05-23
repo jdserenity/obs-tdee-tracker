@@ -44,6 +44,14 @@ class TdeeStore {
     this.rollDayIfNeeded();
     this.file.entries.push(entry);
   }
+
+  removeEntry(id) {
+    this.rollDayIfNeeded();
+    const { makeTombstone } = require("../domain/entries");
+    const idx = this.file.entries.findIndex(e => e.id === id);
+    if (idx < 0) return;
+    this.file.entries[idx] = makeTombstone(id);
+  }
 }
 
 module.exports = { TdeeStore };

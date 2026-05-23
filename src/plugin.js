@@ -1,7 +1,7 @@
 const { Plugin } = require("obsidian");
 const { DEFAULT_SETTINGS } = require("./domain/defaults");
 const { getCurrentDay } = require("./domain/dates");
-const { makeEntry } = require("./domain/entries");
+const { makeEntry, isStapleLogged } = require("./domain/entries");
 const { TdeeStore } = require("./store/tdee-store");
 const { VaultRepository } = require("./infra/vault-repository");
 const { SyncCoordinator } = require("./infra/sync-coordinator");
@@ -67,6 +67,7 @@ class TdeeTrackerPlugin extends Plugin {
   }
 
   async addStaple(staple) {
+    if (isStapleLogged(this.store.file.entries, staple.id)) return;
     this.store.addEntry(makeEntry({
       kind: "staple",
       refId: staple.id,
@@ -77,7 +78,8 @@ class TdeeTrackerPlugin extends Plugin {
     await this.refreshAll();
   }
 
-  async addRegular(regular, count) {
+  async addRegular(regular, count, el) {
+    this.setAddMode(el, false);
     this.store.addEntry(makeEntry({
       kind: "regular",
       refId: regular.id,
@@ -89,12 +91,19 @@ class TdeeTrackerPlugin extends Plugin {
     await this.refreshAll();
   }
 
-  async addCustom(calories) {
+  async addCustom(calories, el) {
+    this.setAddMode(el, false);
     this.store.addEntry(makeEntry({
       kind: "custom",
       label: "Custom",
       calories
     }));
+    await this.vault.saveFile();
+    await this.refreshAll();
+  }
+
+  async removeEntry(entryId) {
+    this.store.removeEntry(entryId);
     await this.vault.saveFile();
     await this.refreshAll();
   }
