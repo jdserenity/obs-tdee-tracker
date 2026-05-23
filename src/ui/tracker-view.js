@@ -21,6 +21,20 @@ class TrackerView {
   async _renderImpl(el) {
     this.plugin._trackerElements.add(el);
     this.plugin.store.rollDayIfNeeded();
+    if (this.plugin.store.loadError) {
+      const container = document.createElement("div");
+      container.className = "tdee-tracker-container";
+      container.createEl("p", {
+        cls: "tdee-tracker-error",
+        text: `Could not parse ${this.plugin.store.settings.filePath}: ${this.plugin.store.loadError}`
+      });
+      container.createEl("p", {
+        cls: "tdee-tracker-empty",
+        text: "Fix the JSON in that file (commas, quotes, brackets). Logs do not conflict with staples — invalid JSON breaks the whole file."
+      });
+      el.replaceChildren(container);
+      return;
+    }
     const file = this.plugin.store.file;
     const addMode = this.plugin.isAddMode(el);
     const logged = activeEntries(file.entries);
@@ -31,7 +45,7 @@ class TrackerView {
     const ratio = progressRatio(total, tdee);
 
     this.renderSummary(container, total, tdee, ratio);
-    this.renderChain(container, el, file, logged, !addMode);
+    this.renderChain(container, el, file, logged, addMode);
     if (addMode) this.renderAddMode(container, el, file);
 
     el.replaceChildren(container);
@@ -58,7 +72,7 @@ class TrackerView {
     }
   }
 
-  renderChain(container, el, file, logged, showStaples) {
+  renderChain(container, el, file, logged, addMode) {
     const chain = container.createDiv({ cls: "tdee-chain" });
     if (logged.length > 0) {
       const loggedRow = chain.createDiv({ cls: "tdee-chain-logged" });
@@ -68,7 +82,7 @@ class TrackerView {
       });
     }
 
-    if (showStaples) {
+    if (!addMode) {
       const pendingStaples = file.staples.filter(s => !isStapleLogged(file.entries, s.id));
       if (pendingStaples.length === 0 && logged.length === 0) {
         chain.createEl("p", {
@@ -88,11 +102,20 @@ class TrackerView {
           });
         }
       }
-      const plus = chain.createEl("button", {
-        cls: "tdee-chain-btn tdee-chain-plus",
-        text: "+",
-        attr: { title: "Add regular or custom calories" }
-      });
+    }
+    this.renderPlusButton(chain, el, addMode);
+  }
+
+  renderPlusButton(chain, el, addMode) {
+    const plus = chain.createEl("button", {
+      cls: `tdee-chain-btn tdee-chain-plus${addMode ? " tdee-chain-plus-disabled" : ""}`,
+      text: "+",
+      attr: {
+        title: addMode ? "Close add menu first" : "Add regular or custom calories",
+        ...(addMode ? { disabled: "true" } : {})
+      }
+    });
+    if (!addMode) {
       plus.addEventListener("click", async () => {
         this.plugin.setAddMode(el, true);
         await this.render(el);
@@ -102,7 +125,7 @@ class TrackerView {
 
   renderLoggedChip(chain, entry) {
     const amount = entryCalories(entry);
-    const label = entry.kind === "custom" ? formatCalories(amount) : entry.label;
+    const label = entry.label;
     const displayLabel = entry.count > 1 ? `${label} ×${entry.count}` : label;
     const chip = chain.createEl("button", {
       cls: "tdee-chain-btn tdee-chain-done",
@@ -146,11 +169,15 @@ class TrackerView {
     }
 
     const custom = panel.createDiv({ cls: "tdee-custom-row" });
-    custom.createDiv({ cls: "tdee-custom-label", text: "Irregular:" });
+    const info = custom.createDiv({ cls: "tdee-regular-info" });
+    const titleInput = info.createEl("input", {
+      cls: "tdee-meal-title-input",
+      attr: { type: "text", placeholder: "Custom" }
+    });
     this.renderPortionControls(custom, {
       placeholderCalories: "cals",
       onAdd: async (calories, count) => {
-        await this.plugin.addCustom(calories, count, el);
+        await this.plugin.addCustom(titleInput.value, calories, count, el);
       }
     });
   }

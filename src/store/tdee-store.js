@@ -8,6 +8,7 @@ class TdeeStore {
     this.settings = { ...DEFAULT_SETTINGS };
     this.file = normalizeFile(DEFAULT_FILE);
     this.fileLoaded = false;
+    this.loadError = null;
   }
 
   getCurrentDay() {
@@ -23,6 +24,12 @@ class TdeeStore {
     this.file = normalizeFile(parsed);
     this.rollDayIfNeeded();
     this.fileLoaded = true;
+    this.loadError = null;
+  }
+
+  setLoadError(message) {
+    this.fileLoaded = false;
+    this.loadError = message;
   }
 
   mergeForSave(disk) {

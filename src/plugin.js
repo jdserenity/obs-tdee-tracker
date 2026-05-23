@@ -91,11 +91,11 @@ class TdeeTrackerPlugin extends Plugin {
     await this.refreshAll();
   }
 
-  async addCustom(calories, count, el) {
+  async addCustom(label, calories, count, el) {
     this.setAddMode(el, false);
     this.store.addEntry(makeEntry({
       kind: "custom",
-      label: "Custom",
+      label: (label && String(label).trim()) || "Custom",
       calories,
       count
     }));

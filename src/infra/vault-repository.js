@@ -29,7 +29,7 @@ class VaultRepository {
       return true;
     } catch (e) {
       console.error("tdee-tracker: failed to load vault file:", e);
-      this.store.fileLoaded = true;
+      this.store.setLoadError(e.message);
       return false;
     }
   }
