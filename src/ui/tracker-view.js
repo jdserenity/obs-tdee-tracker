@@ -1,5 +1,6 @@
 const { totalCalories, entryCalories, formatCalories, progressRatio } = require("../domain/totals");
 const { activeEntries, isStapleLogged } = require("../domain/entries");
+const { formatIngredientsList } = require("../domain/ingredients");
 const { appendChainConnector } = require("./chain-connector");
 
 class TrackerView {
@@ -42,7 +43,7 @@ class TrackerView {
     counts.createSpan({ cls: "tdee-today", text: `${formatCalories(total)} kcal` });
     if (tdee > 0) {
       counts.createSpan({ cls: "tdee-sep", text: " / " });
-      counts.createSpan({ cls: "tdee-target", text: `${formatCalories(tdee)} TDEE` });
+      counts.createSpan({ cls: "tdee-target", text: `${formatCalories(tdee)} TDEE ⚡` });
       const remaining = tdee - total;
       summary.createDiv({
         cls: `tdee-remaining${remaining < 0 ? " tdee-remaining-over" : ""}`,
@@ -130,7 +131,11 @@ class TrackerView {
     } else {
       for (const regular of file.regulars) {
         const row = list.createDiv({ cls: "tdee-regular-row" });
-        row.createSpan({ cls: "tdee-regular-name", text: regular.name });
+        const info = row.createDiv({ cls: "tdee-regular-info" });
+        info.createSpan({ cls: "tdee-regular-name", text: regular.name });
+        if (regular.ingredients?.length) {
+          info.createDiv({ cls: "tdee-regular-ingredients", text: formatIngredientsList(regular.ingredients) });
+        }
         this.renderPortionControls(row, {
           defaultCalories: regular.calories,
           onAdd: async (calories, count) => {
@@ -141,7 +146,7 @@ class TrackerView {
     }
 
     const custom = panel.createDiv({ cls: "tdee-custom-row" });
-    custom.createSpan({ text: "Irregular:", cls: "tdee-custom-label" });
+    custom.createDiv({ cls: "tdee-custom-label", text: "Irregular:" });
     this.renderPortionControls(custom, {
       placeholderCalories: "cals",
       onAdd: async (calories, count) => {

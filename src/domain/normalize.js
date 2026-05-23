@@ -6,8 +6,13 @@ function isEntryKind(kind) {
   return kind === "staple" || kind === "regular" || kind === "custom";
 }
 
+const { normalizeIngredients } = require("./ingredients");
+
 function normalizeMealDef(item) {
-  return { id: item.id, name: item.name, calories: Math.max(0, Math.round(item.calories)) };
+  const meal = { id: item.id, name: item.name, calories: Math.max(0, Math.round(item.calories)) };
+  const ingredients = normalizeIngredients(item.ingredients);
+  if (ingredients.length) meal.ingredients = ingredients;
+  return meal;
 }
 
 function isLogEntry(item) {

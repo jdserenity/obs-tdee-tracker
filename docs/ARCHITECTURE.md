@@ -11,8 +11,8 @@ Built with esbuild from `src/` → `dist/main.js`. Deploy via `obs-deploy` (copi
 Single vault file (default `Archive/tdee-tracker.md`), JSON body:
 
 - `tdee` — daily target (kcal)
-- `staples` — `{ id, name, calories }[]` shown as one-tap buttons
-- `regulars` — `{ id, name, calories }[]` shown in add mode (+ button)
+- `staples` — `{ id, name, calories, ingredients? }[]` shown as one-tap buttons
+- `regulars` — `{ id, name, calories, ingredients? }[]` shown in add mode (+ button). Optional `ingredients`: object map or `{ name, calories }[]`; shown under the name in add menu as `Name: 150, …`
 - `day` — `YYYY-MM-DD` for current log day
 - `entries` — today's log: `{ id, kind, refId?, label, calories, count, updatedAt }`
 
