@@ -1,0 +1,9 @@
+{
+  "id": "tdee-tracker",
+  "name": "TDEE Tracker",
+  "version": "1.0.0",
+  "minAppVersion": "0.15.0",
+  "description": "Track daily intake against TDEE with staples, regulars, and quick custom entries",
+  "author": "jd",
+  "isDesktopOnly": false
+}

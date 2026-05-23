@@ -1,0 +1,234 @@
+/* TDEE Tracker Plugin Styles */
+
+.markdown-rendered pre:has(.tdee-tracker-container) {
+  position: relative;
+}
+
+.markdown-rendered pre:has(.tdee-tracker-container)::before,
+.markdown-rendered pre:has(.tdee-tracker-container)::after {
+  display: none !important;
+}
+
+.tdee-tracker-container {
+  padding: 16px;
+  font-family: var(--font-interface);
+}
+
+.tdee-tracker-empty {
+  color: var(--text-muted);
+  font-style: italic;
+  margin: 0;
+}
+
+.tdee-summary {
+  margin-bottom: 16px;
+}
+
+.tdee-counts {
+  font-size: 1.4em;
+  font-weight: 700;
+  color: var(--text-normal);
+  line-height: 1.2;
+}
+
+.tdee-sep,
+.tdee-target {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.tdee-remaining {
+  margin-top: 4px;
+  font-size: 0.9em;
+  color: var(--text-muted);
+}
+
+.tdee-remaining-over {
+  color: var(--text-error);
+}
+
+.tdee-progress {
+  margin-top: 10px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--background-modifier-border);
+  overflow: hidden;
+}
+
+.tdee-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--interactive-accent);
+  transition: width 0.2s ease;
+}
+
+.tdee-chain {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 0;
+  margin-bottom: 12px;
+}
+
+.tdee-chain-btn {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 52px;
+  padding: 8px 14px;
+  border: 1px solid var(--background-modifier-border);
+  border-right: none;
+  background: var(--background-secondary);
+  color: var(--text-normal);
+  cursor: pointer;
+  font-size: 0.85em;
+  font-weight: 600;
+  transition: background 0.15s ease;
+}
+
+.tdee-chain-btn:first-child {
+  border-radius: 8px 0 0 8px;
+}
+
+.tdee-chain-plus {
+  border-right: 1px solid var(--background-modifier-border);
+  border-radius: 0 8px 8px 0;
+  min-width: 44px;
+  font-size: 1.4em;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.tdee-chain-btn:hover {
+  background: var(--background-modifier-hover);
+}
+
+.tdee-chain-kcal {
+  font-size: 0.75em;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.tdee-add-panel {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+  background: var(--background-secondary);
+}
+
+.tdee-add-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.tdee-add-title {
+  font-weight: 600;
+  color: var(--text-normal);
+}
+
+.tdee-add-back {
+  border: none;
+  background: transparent;
+  color: var(--text-accent);
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.tdee-regular-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.tdee-regular-row,
+.tdee-custom-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tdee-regular-name {
+  flex: 1;
+  min-width: 100px;
+  font-weight: 500;
+}
+
+.tdee-regular-kcal,
+.tdee-custom-label {
+  color: var(--text-muted);
+  font-size: 0.9em;
+}
+
+.tdee-count-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tdee-count-input,
+.tdee-custom-input {
+  width: 72px;
+  padding: 4px 8px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  background: var(--background-primary);
+  color: var(--text-normal);
+}
+
+.tdee-add-btn {
+  padding: 4px 10px;
+  border: none;
+  border-radius: 4px;
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+  cursor: pointer;
+  font-size: 0.85em;
+}
+
+.tdee-add-btn:hover {
+  filter: brightness(1.05);
+}
+
+.tdee-log {
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.tdee-log-label {
+  font-size: 0.75em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.tdee-log-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tdee-log-item {
+  font-size: 0.85em;
+  color: var(--text-muted);
+}
+
+.is-mobile .tdee-chain-btn {
+  min-height: 48px;
+  padding: 10px 12px;
+}
+
+.is-mobile .tdee-count-input,
+.is-mobile .tdee-custom-input {
+  width: 64px;
+  font-size: 16px;
+}
