@@ -74,13 +74,10 @@ class TrackerView {
 
   renderChain(container, el, file, logged, addMode) {
     const chain = container.createDiv({ cls: "tdee-chain" });
-    if (logged.length > 0) {
-      const loggedRow = chain.createDiv({ cls: "tdee-chain-logged" });
-      logged.forEach((entry, i) => {
-        if (i > 0) appendChainConnector(loggedRow);
-        this.renderLoggedChip(loggedRow, entry);
-      });
-    }
+    logged.forEach((entry, i) => {
+      if (i > 0) appendChainConnector(chain);
+      this.renderLoggedChip(chain, entry);
+    });
 
     if (!addMode) {
       const pendingStaples = file.staples.filter(s => !isStapleLogged(file.entries, s.id));
