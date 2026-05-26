@@ -18,4 +18,12 @@ function progressRatio(total, tdee) {
   return Math.min(1, total / tdee);
 }
 
-module.exports = { entryCalories, totalCalories, formatCalories, progressRatio };
+function remainingDisplay(total, tdee) {
+  const remaining = tdee - total;
+  if (remaining >= 0) {
+    return { text: `${formatCalories(remaining)} kcal remaining`, extraClass: "" };
+  }
+  return { text: `💪 ${formatCalories(Math.abs(remaining))} kcal over TDEE`, extraClass: " tdee-remaining-surplus" };
+}
+
+module.exports = { entryCalories, totalCalories, formatCalories, progressRatio, remainingDisplay };

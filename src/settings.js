@@ -30,7 +30,7 @@ class TdeeTrackerSettingTab extends PluginSettingTab {
       .setName("Vault File Path")
       .setDesc("JSON config + today's log (relative to vault root). Syncs across devices.")
       .addText(text => text
-        .setPlaceholder("Archive/tdee-tracker.md")
+        .setPlaceholder("Archive/tdee-tracker-config.md")
         .setValue(this.plugin.store.settings.filePath)
         .onChange(async (value) => {
           if (value) {

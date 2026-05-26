@@ -8,7 +8,7 @@ Built with esbuild from `src/` → `dist/main.js`. Deploy via `obs-deploy` (copi
 
 ## Data
 
-Single vault file (default `Archive/tdee-tracker.md`), JSON body:
+Single vault file (default `Archive/tdee-tracker-config.md`), JSON body:
 
 - `tdee` — daily target (kcal)
 - `staples` — `{ id, name, calories, ingredients? }[]` shown as one-tap buttons
@@ -33,7 +33,7 @@ Code block:
 ```
 ````
 
-Shows total / TDEE / remaining. Logged foods appear as green rounded chips linked by an SVG chain; staples log once; click green to remove.
+Shows total / TDEE / remaining (or surplus over TDEE in green with 💪 when over target). Logged foods appear as green rounded chips linked by an SVG chain through staples and the + button; staples log once; click green to remove.
 
 ## Layout
 

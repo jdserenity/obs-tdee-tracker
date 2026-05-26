@@ -1,4 +1,4 @@
-const { totalCalories, entryCalories, formatCalories, progressRatio } = require("../domain/totals");
+const { totalCalories, entryCalories, formatCalories, progressRatio, remainingDisplay } = require("../domain/totals");
 const { activeEntries, isStapleLogged } = require("../domain/entries");
 const { formatIngredientsList } = require("../domain/ingredients");
 const { appendChainConnector } = require("./chain-connector");
@@ -58,11 +58,8 @@ class TrackerView {
     if (tdee > 0) {
       counts.createSpan({ cls: "tdee-sep", text: " / " });
       counts.createSpan({ cls: "tdee-target", text: `${formatCalories(tdee)} TDEE ⚡` });
-      const remaining = tdee - total;
-      summary.createDiv({
-        cls: `tdee-remaining${remaining < 0 ? " tdee-remaining-over" : ""}`,
-        text: remaining >= 0 ? `${formatCalories(remaining)} kcal remaining` : `${formatCalories(Math.abs(remaining))} kcal over TDEE`
-      });
+      const { text, extraClass } = remainingDisplay(total, tdee);
+      summary.createDiv({ cls: `tdee-remaining${extraClass}`, text });
     } else {
       summary.createDiv({ cls: "tdee-remaining", text: "Set tdee in your vault file" });
     }
@@ -74,8 +71,14 @@ class TrackerView {
 
   renderChain(container, el, file, logged, addMode) {
     const chain = container.createDiv({ cls: "tdee-chain" });
-    logged.forEach((entry, i) => {
-      if (i > 0) appendChainConnector(chain);
+    let hasChip = false;
+    const beforeChip = () => {
+      if (hasChip) appendChainConnector(chain);
+      hasChip = true;
+    };
+
+    logged.forEach((entry) => {
+      beforeChip();
       this.renderLoggedChip(chain, entry);
     });
 
@@ -84,10 +87,11 @@ class TrackerView {
       if (pendingStaples.length === 0 && logged.length === 0) {
         chain.createEl("p", {
           cls: "tdee-tracker-empty tdee-chain-empty",
-          text: "No staples in vault file. Add staples to Archive/tdee-tracker.md."
+          text: "No staples in vault file. Add staples to Archive/tdee-tracker-config.md."
         });
       } else {
         for (const staple of pendingStaples) {
+          beforeChip();
           const btn = chain.createEl("button", {
             cls: "tdee-chain-btn",
             attr: { title: `+${staple.calories} kcal` }
@@ -100,6 +104,8 @@ class TrackerView {
         }
       }
     }
+
+    if (hasChip) appendChainConnector(chain);
     this.renderPlusButton(chain, el, addMode);
   }
 

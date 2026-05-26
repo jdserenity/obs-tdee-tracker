@@ -1,6 +1,6 @@
 const DEFAULT_SETTINGS = {
   dayEndTime: "04:00",
-  filePath: "Archive/tdee-tracker.md"
+  filePath: "Archive/tdee-tracker-config.md"
 };
 
 const DEFAULT_FILE = {

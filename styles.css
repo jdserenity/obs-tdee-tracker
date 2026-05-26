@@ -49,8 +49,9 @@
   color: var(--text-muted);
 }
 
-.tdee-remaining-over {
-  color: var(--text-error);
+.tdee-remaining-surplus {
+  color: rgb(34, 197, 94);
+  font-weight: 600;
 }
 
 .tdee-progress {
@@ -72,16 +73,15 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: 0;
   margin-bottom: 12px;
 }
 
 .tdee-chain-connector {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 28px;
-  margin: 0 -6px;
+  width: 14px;
+  overflow: hidden;
   flex-shrink: 0;
   z-index: 0;
   color: var(--text-muted);
@@ -89,12 +89,16 @@
 }
 
 .tdee-chain-connector-svg {
-  width: 28px;
+  width: 34px;
   height: 14px;
+  margin-left: var(--tdee-chain-svg-offset, -10px);
   display: block;
+  flex-shrink: 0;
 }
 
 .tdee-chain-btn {
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   flex-direction: column;
   align-items: center;
@@ -151,8 +155,6 @@
 }
 
 .tdee-chain-done {
-  position: relative;
-  z-index: 1;
   background: rgb(34, 197, 94);
   color: #fff;
   border-color: rgb(34, 197, 94);

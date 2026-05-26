@@ -8,7 +8,7 @@ class VaultRepository {
   }
 
   filePath() {
-    return this.store.settings.filePath || "Archive/tdee-tracker.md";
+    return this.store.settings.filePath || "Archive/tdee-tracker-config.md";
   }
 
   async fileExists() {

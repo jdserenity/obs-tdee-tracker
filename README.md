@@ -8,7 +8,7 @@ Obsidian plugin for tracking daily intake against TDEE — staples, regulars, an
 
 1. Copy or deploy the plugin to `.obsidian/plugins/tdee-tracker/` (`main.js`, `manifest.json`, `styles.css`).
 2. Enable **TDEE Tracker** in Community Plugins.
-3. Create `Archive/tdee-tracker.md` in your vault (JSON — see ARCHITECTURE for shape).
+3. Create `Archive/tdee-tracker-config.md` in your vault (JSON — see ARCHITECTURE for shape).
 4. Add a code block to any note:
 
 ````markdown
