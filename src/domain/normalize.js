@@ -9,7 +9,7 @@ function isEntryKind(kind) {
 const { normalizeIngredients } = require("./ingredients");
 
 function normalizeMealDef(item) {
-  const meal = { id: item.id, name: item.name, calories: Math.max(0, Math.round(item.calories)) };
+  const meal = { id: item.id, name: item.name, calories: Math.max(0, Math.round(item.calories)), protein: Math.max(0, Math.round(typeof item.protein === "number" ? item.protein : 0)) };
   const ingredients = normalizeIngredients(item.ingredients);
   if (ingredients.length) meal.ingredients = ingredients;
   return meal;
@@ -28,6 +28,7 @@ function normalizeEntry(item) {
     refId: typeof item.refId === "string" ? item.refId : null,
     label: typeof item.label === "string" ? item.label : "Custom",
     calories: Math.max(0, Math.round(item.calories)),
+    protein: Math.max(0, Math.round(typeof item.protein === "number" ? item.protein : 0)),
     count,
     updatedAt: typeof item.updatedAt === "string" ? item.updatedAt : new Date(0).toISOString()
   };
@@ -50,6 +51,7 @@ function normalizeFile(raw) {
   const data = raw && typeof raw === "object" ? raw : {};
   return {
     tdee: typeof data.tdee === "number" && data.tdee >= 0 ? data.tdee : 0,
+    protein: typeof data.protein === "number" && data.protein >= 0 ? data.protein : 0,
     staples: Array.isArray(data.staples) ? data.staples.filter(isMealDef).map(normalizeMealDef) : [],
     regulars: Array.isArray(data.regulars) ? data.regulars.filter(isMealDef).map(normalizeMealDef) : [],
     day: typeof data.day === "string" ? data.day : "",

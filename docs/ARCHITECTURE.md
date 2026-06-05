@@ -11,10 +11,11 @@ Built with esbuild from `src/` → `dist/main.js`. Deploy via `obs-deploy` (copi
 Single vault file (default `Archive/tdee-tracker-config.md`), JSON body:
 
 - `tdee` — daily target (kcal)
-- `staples` — `{ id, name, calories, ingredients? }[]` shown as one-tap buttons
-- `regulars` — `{ id, name, calories, ingredients? }[]` shown in add mode (+ button). Optional `ingredients`: object map or `{ name, calories }[]`; shown under the name in add menu as `Name: 150, …`
+- `protein` — daily protein target (g)
+- `staples` — `{ id, name, calories, protein, ingredients? }[]` shown as one-tap buttons (`protein` defaults to `0` if omitted)
+- `regulars` — `{ id, name, calories, protein, ingredients? }[]` shown in add mode (+ button). Optional `ingredients`: object map (`Name: calories` or `Name: { calories, protein }`) or `{ name, calories, protein? }[]`; shown under the name in add menu as `Name: 150 / 5g, …` (`protein` defaults to `0` if omitted)
 - `day` — `YYYY-MM-DD` for current log day
-- `entries` — today's log: `{ id, kind, refId?, label, calories, count, updatedAt }`
+- `entries` — today's log: `{ id, kind, refId?, label, calories, protein, count, updatedAt }`
 
 Only today's entries are kept; day rollover clears `entries` when `day` ≠ current day (respects day-end setting).
 
@@ -33,7 +34,7 @@ Code block:
 ```
 ````
 
-Shows total / TDEE / remaining (or surplus over TDEE in green with 💪 when over target). Logged foods appear as green rounded chips linked by an SVG chain through staples and the + button; staples log once; click green to remove.
+Shows total / TDEE / remaining (or surplus over TDEE in green with 💪 when over target), then protein total / target / remaining the same way. Logged foods appear as green rounded chips linked by an SVG chain through staples and the + button; staples log once; click green to remove. Add menu lets you edit calories and protein before adding a regular or custom entry.
 
 ## Layout
 
@@ -54,11 +55,12 @@ Tests: `npm test`.
 ```json
 {
   "tdee": 2500,
+  "protein": 180,
   "staples": [
-    { "id": "olive-oil", "name": "Olive Oil", "calories": 600 }
+    { "id": "olive-oil", "name": "Olive Oil", "calories": 600, "protein": 0 }
   ],
   "regulars": [
-    { "id": "chicken-rice", "name": "Chicken & Rice", "calories": 800 }
+    { "id": "chicken-rice", "name": "Chicken & Rice", "calories": 800, "protein": 60 }
   ],
   "day": "2026-05-23",
   "entries": []

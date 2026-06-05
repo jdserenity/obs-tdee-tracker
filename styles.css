@@ -62,11 +62,8 @@
   overflow: hidden;
 }
 
-.tdee-progress-fill {
-  height: 100%;
-  border-radius: 999px;
-  background: var(--interactive-accent);
-  transition: width 0.2s ease;
+.tdee-protein-counts {
+  margin-top: 12px;
 }
 
 .tdee-chain {

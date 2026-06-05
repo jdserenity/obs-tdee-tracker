@@ -11,6 +11,7 @@ function mergeEntries(localEntries, diskEntries) {
 
 function applyConfigFromDisk(target, disk) {
   if (typeof disk.tdee === "number") target.tdee = disk.tdee;
+  if (typeof disk.protein === "number") target.protein = disk.protein;
   if (Array.isArray(disk.staples)) target.staples = disk.staples;
   if (Array.isArray(disk.regulars)) target.regulars = disk.regulars;
 }

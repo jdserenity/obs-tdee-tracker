@@ -15,20 +15,23 @@ test("mergeEntries keeps newer updatedAt per id", () => {
 test("mergeForSave merges same-day entries and disk config", () => {
   const local = normalizeFile({
     tdee: 2000,
-    staples: [{ id: "oil", name: "Olive Oil", calories: 600 }],
+    protein: 150,
+    staples: [{ id: "oil", name: "Olive Oil", calories: 600, protein: 0 }],
     regulars: [],
     day: "2026-05-23",
-    entries: [{ id: "e1", kind: "staple", label: "Olive Oil", calories: 600, count: 1, updatedAt: "2026-05-23T08:00:00.000Z" }]
+    entries: [{ id: "e1", kind: "staple", label: "Olive Oil", calories: 600, protein: 0, count: 1, updatedAt: "2026-05-23T08:00:00.000Z" }]
   });
   const disk = normalizeFile({
     tdee: 2500,
-    staples: [{ id: "oil", name: "Olive Oil", calories: 600 }],
-    regulars: [{ id: "rice", name: "Rice", calories: 500 }],
+    protein: 180,
+    staples: [{ id: "oil", name: "Olive Oil", calories: 600, protein: 0 }],
+    regulars: [{ id: "rice", name: "Rice", calories: 500, protein: 12 }],
     day: "2026-05-23",
-    entries: [{ id: "e2", kind: "regular", label: "Rice", calories: 500, count: 1, updatedAt: "2026-05-23T09:00:00.000Z" }]
+    entries: [{ id: "e2", kind: "regular", label: "Rice", calories: 500, protein: 12, count: 1, updatedAt: "2026-05-23T09:00:00.000Z" }]
   });
   const merged = mergeForSave(local, disk, "2026-05-23");
   assert.equal(merged.tdee, 2500);
+  assert.equal(merged.protein, 180);
   assert.equal(merged.regulars.length, 1);
   assert.equal(merged.entries.length, 2);
   assert.equal(merged.entries.filter(e => !e.deleted).length, 2);
@@ -37,20 +40,23 @@ test("mergeForSave merges same-day entries and disk config", () => {
 test("mergeIncoming applies disk config and merges entries", () => {
   const memory = normalizeFile({
     tdee: 2000,
+    protein: 150,
     staples: [],
     regulars: [],
     day: "2026-05-23",
-    entries: [{ id: "e1", kind: "custom", label: "Custom", calories: 300, count: 1, updatedAt: "2026-05-23T10:00:00.000Z" }]
+    entries: [{ id: "e1", kind: "custom", label: "Custom", calories: 300, protein: 25, count: 1, updatedAt: "2026-05-23T10:00:00.000Z" }]
   });
   const disk = normalizeFile({
     tdee: 2600,
-    staples: [{ id: "oil", name: "Olive Oil", calories: 600 }],
+    protein: 180,
+    staples: [{ id: "oil", name: "Olive Oil", calories: 600, protein: 0 }],
     regulars: [],
     day: "2026-05-23",
-    entries: [{ id: "e2", kind: "staple", label: "Olive Oil", calories: 600, count: 1, updatedAt: "2026-05-23T08:00:00.000Z" }]
+    entries: [{ id: "e2", kind: "staple", label: "Olive Oil", calories: 600, protein: 0, count: 1, updatedAt: "2026-05-23T08:00:00.000Z" }]
   });
   mergeIncoming(memory, disk, "2026-05-23");
   assert.equal(memory.tdee, 2600);
+  assert.equal(memory.protein, 180);
   assert.equal(memory.staples.length, 1);
   assert.equal(memory.entries.length, 2);
 });

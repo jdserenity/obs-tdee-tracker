@@ -2,13 +2,14 @@ function newEntryId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
-function makeEntry({ kind, refId, label, calories, count = 1 }) {
+function makeEntry({ kind, refId, label, calories, protein = 0, count = 1 }) {
   return {
     id: newEntryId(),
     kind,
     refId: refId || null,
     label,
     calories: Math.max(0, Math.round(calories)),
+    protein: Math.max(0, Math.round(protein)),
     count: Math.max(1, Math.round(count)),
     updatedAt: new Date().toISOString()
   };

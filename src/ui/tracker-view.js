@@ -1,4 +1,4 @@
-const { totalCalories, entryCalories, formatCalories, progressRatio, remainingDisplay } = require("../domain/totals");
+const { totalCalories, totalProtein, entryCalories, entryProtein, formatCalories, formatProtein, formatChipMacros, progressRatio, remainingDisplay, proteinRemainingDisplay } = require("../domain/totals");
 const { activeEntries, isStapleLogged } = require("../domain/entries");
 const { formatIngredientsList } = require("../domain/ingredients");
 const { appendChainConnector } = require("./chain-connector");
@@ -43,15 +43,18 @@ class TrackerView {
     const total = totalCalories(file.entries);
     const tdee = file.tdee || 0;
     const ratio = progressRatio(total, tdee);
+    const proteinTotal = totalProtein(file.entries);
+    const proteinTarget = file.protein || 0;
+    const proteinRatio = progressRatio(proteinTotal, proteinTarget);
 
-    this.renderSummary(container, total, tdee, ratio);
+    this.renderSummary(container, total, tdee, ratio, proteinTotal, proteinTarget, proteinRatio);
     this.renderChain(container, el, file, logged, addMode);
     if (addMode) this.renderAddMode(container, el, file);
 
     el.replaceChildren(container);
   }
 
-  renderSummary(container, total, tdee, ratio) {
+  renderSummary(container, total, tdee, ratio, proteinTotal, proteinTarget, proteinRatio) {
     const summary = container.createDiv({ cls: "tdee-summary" });
     const counts = summary.createDiv({ cls: "tdee-counts" });
     counts.createSpan({ cls: "tdee-today", text: `${formatCalories(total)} kcal` });
@@ -66,6 +69,20 @@ class TrackerView {
     if (tdee > 0) {
       const bar = summary.createDiv({ cls: "tdee-progress" });
       bar.createDiv({ cls: "tdee-progress-fill", attr: { style: `width:${Math.round(ratio * 100)}%` } });
+    }
+    const proteinCounts = summary.createDiv({ cls: "tdee-counts tdee-protein-counts" });
+    proteinCounts.createSpan({ cls: "tdee-today", text: `${formatProtein(proteinTotal)} g` });
+    if (proteinTarget > 0) {
+      proteinCounts.createSpan({ cls: "tdee-sep", text: " / " });
+      proteinCounts.createSpan({ cls: "tdee-target", text: `${formatProtein(proteinTarget)} protein 🥩` });
+      const { text, extraClass } = proteinRemainingDisplay(proteinTotal, proteinTarget);
+      summary.createDiv({ cls: `tdee-remaining${extraClass}`, text });
+    } else {
+      summary.createDiv({ cls: "tdee-remaining", text: "Set protein in your vault file" });
+    }
+    if (proteinTarget > 0) {
+      const bar = summary.createDiv({ cls: "tdee-progress" });
+      bar.createDiv({ cls: "tdee-progress-fill", attr: { style: `width:${Math.round(proteinRatio * 100)}%` } });
     }
   }
 
@@ -94,10 +111,10 @@ class TrackerView {
           beforeChip();
           const btn = chain.createEl("button", {
             cls: "tdee-chain-btn",
-            attr: { title: `+${staple.calories} kcal` }
+            attr: { title: `+${formatChipMacros(staple.calories, staple.protein)}` }
           });
           btn.createSpan({ cls: "tdee-chain-label", text: staple.name });
-          btn.createSpan({ cls: "tdee-chain-kcal", text: `${staple.calories}` });
+          btn.createSpan({ cls: "tdee-chain-kcal", text: formatChipMacros(staple.calories, staple.protein) });
           btn.addEventListener("click", async () => {
             await this.plugin.addStaple(staple);
           });
@@ -128,14 +145,16 @@ class TrackerView {
 
   renderLoggedChip(chain, entry) {
     const amount = entryCalories(entry);
+    const protein = entryProtein(entry);
+    const macros = formatChipMacros(amount, protein);
     const label = entry.label;
     const displayLabel = entry.count > 1 ? `${label} ×${entry.count}` : label;
     const chip = chain.createEl("button", {
       cls: "tdee-chain-btn tdee-chain-done",
-      attr: { title: `${formatCalories(amount)} kcal — click to remove` }
+      attr: { title: `${macros} — click to remove` }
     });
     chip.createSpan({ cls: "tdee-chain-label", text: displayLabel });
-    chip.createSpan({ cls: "tdee-chain-kcal", text: `${formatCalories(amount)}` });
+    chip.createSpan({ cls: "tdee-chain-kcal", text: macros });
     chip.addEventListener("click", async () => {
       await this.plugin.removeEntry(entry.id);
     });
@@ -164,8 +183,9 @@ class TrackerView {
         }
         this.renderPortionControls(row, {
           defaultCalories: regular.calories,
-          onAdd: async (calories, count) => {
-            await this.plugin.addRegular(regular, calories, count, el);
+          defaultProtein: regular.protein,
+          onAdd: async (calories, protein, count) => {
+            await this.plugin.addRegular(regular, calories, protein, count, el);
           }
         });
       }
@@ -179,18 +199,24 @@ class TrackerView {
     });
     this.renderPortionControls(custom, {
       placeholderCalories: "cals",
-      onAdd: async (calories, count) => {
-        await this.plugin.addCustom(titleInput.value, calories, count, el);
+      placeholderProtein: "protein",
+      onAdd: async (calories, protein, count) => {
+        await this.plugin.addCustom(titleInput.value, calories, protein, count, el);
       }
     });
   }
 
-  renderPortionControls(row, { defaultCalories, placeholderCalories, onAdd }) {
+  renderPortionControls(row, { defaultCalories, defaultProtein, placeholderCalories, placeholderProtein, onAdd }) {
     const wrap = row.createDiv({ cls: "tdee-portion-wrap" });
     const calAttrs = { type: "number", min: "1", step: "1" };
     if (defaultCalories != null) calAttrs.value = String(defaultCalories);
     else if (placeholderCalories) calAttrs.placeholder = placeholderCalories;
     const calInput = wrap.createEl("input", { cls: "tdee-portion-input", attr: calAttrs });
+    const proteinAttrs = { type: "number", min: "0", step: "1" };
+    if (defaultProtein != null) proteinAttrs.value = String(defaultProtein);
+    else if (placeholderProtein) proteinAttrs.placeholder = placeholderProtein;
+    else proteinAttrs.value = "0";
+    const proteinInput = wrap.createEl("input", { cls: "tdee-portion-input tdee-portion-protein", attr: proteinAttrs });
     wrap.createSpan({ cls: "tdee-portion-x", text: "×" });
     const qtyInput = wrap.createEl("input", {
       cls: "tdee-portion-input tdee-portion-qty",
@@ -199,9 +225,10 @@ class TrackerView {
     const addBtn = wrap.createEl("button", { cls: "tdee-add-btn", text: "Add" });
     addBtn.addEventListener("click", async () => {
       const calories = Math.round(Number(calInput.value));
+      const protein = Math.max(0, Math.round(Number(proteinInput.value) || 0));
       const count = Math.max(1, Math.round(Number(qtyInput.value) || 1));
       if (!calories || calories <= 0) return;
-      await onAdd(calories, count);
+      await onAdd(calories, protein, count);
     });
   }
 

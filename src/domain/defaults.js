@@ -5,6 +5,7 @@ const DEFAULT_SETTINGS = {
 
 const DEFAULT_FILE = {
   tdee: 0,
+  protein: 0,
   staples: [],
   regulars: [],
   day: "",

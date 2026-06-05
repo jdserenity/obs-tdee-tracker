@@ -82,31 +82,34 @@ class TdeeTrackerPlugin extends Plugin {
       kind: "staple",
       refId: staple.id,
       label: staple.name,
-      calories: staple.calories
+      calories: staple.calories,
+      protein: staple.protein
     }));
     await this.vault.saveFile();
     await this.refreshAll();
   }
 
-  async addRegular(regular, calories, count, el) {
+  async addRegular(regular, calories, protein, count, el) {
     this.setAddMode(el, false);
     this.store.addEntry(makeEntry({
       kind: "regular",
       refId: regular.id,
       label: regular.name,
       calories,
+      protein,
       count
     }));
     await this.vault.saveFile();
     await this.refreshAll();
   }
 
-  async addCustom(label, calories, count, el) {
+  async addCustom(label, calories, protein, count, el) {
     this.setAddMode(el, false);
     this.store.addEntry(makeEntry({
       kind: "custom",
       label: (label && String(label).trim()) || "Custom",
       calories,
+      protein,
       count
     }));
     await this.vault.saveFile();
